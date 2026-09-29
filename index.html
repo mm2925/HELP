@@ -1,1 +1,220 @@
-<h1>hello</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>who's that girl ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0716;
+    --pink: #ff8ad8;
+    --white: #fff;
+    --card: #1a1027;
+    --pp: linear-gradient(135deg, #ff5fcf, #8b3dff);
+    --tyla: linear-gradient(135deg, #ff8a2b, #ffd24a);
+    --kat: linear-gradient(135deg, #3d8bff, #7dffd6);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    background: radial-gradient(ellipse at top, #1d0d33 0%, var(--bg) 60%);
+    color: var(--white);
+    font-family: 'Nunito', sans-serif; font-weight: 600;
+    text-align: center; padding: 32px 16px 64px;
+    position: relative; overflow-x: hidden;
+  }
+  .spark { position: fixed; color: var(--pink); opacity: .55; pointer-events: none; user-select: none; }
+  h1 {
+    font-family: 'Comfortaa', sans-serif; font-weight: 700;
+    font-size: clamp(2.4rem, 8vw, 4.2rem); margin: 8px 0 4px;
+    color: var(--white); text-shadow: 0 0 22px rgba(255,138,216,.7);
+  }
+  .sub { color: var(--pink); margin: 0 0 28px; font-size: 1.05rem; }
+  #progress { color: var(--pink); font-weight: 800; margin-bottom: 10px; }
+  .bar { width: min(420px, 90%); height: 8px; background: #2a1a3d; border-radius: 99px; margin: 0 auto 32px; overflow: hidden; }
+  .bar div { height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--white)); border-radius: 99px; transition: width .3s; }
+  #arena { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .vs { color: var(--pink); font-size: 1.6rem; }
+  .card {
+    width: 230px; padding: 14px; text-align: left; cursor: pointer;
+    background: var(--card); border-radius: 18px;
+    border: 2px solid rgba(255,138,216,.45);
+    box-shadow: 0 0 14px rgba(255,138,216,.25);
+    font: inherit; color: var(--white);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .card:hover, .card:focus-visible {
+    transform: translateY(-8px) scale(1.04); outline: none;
+    border-color: var(--pink); box-shadow: 0 0 30px rgba(255,138,216,.7);
+  }
+  .art {
+    aspect-ratio: 1; border-radius: 12px; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 5.5rem; color: #fff; margin-bottom: 12px;
+  }
+  .title { font-weight: 800; font-size: 1.15rem; color: var(--white); }
+  .artist { color: var(--pink); font-size: .9rem; margin-top: 2px; }
+  #results { display: none; max-width: 480px; margin: 0 auto; }
+  #results h2 { font-family: 'Comfortaa', sans-serif; color: var(--white); margin: 0 0 18px; }
+  ol { list-style: none; padding: 0; margin: 0 0 24px; }
+  li {
+    display: flex; align-items: center; gap: 12px; text-align: left;
+    padding: 10px 14px; margin-bottom: 8px; border-radius: 14px;
+    background: rgba(255,138,216,.08);
+  }
+  .num { color: var(--pink); font-weight: 800; width: 28px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .who { color: var(--pink); margin-left: auto; font-size: .9rem; }
+  #copy {
+    font: inherit; font-weight: 800; font-size: 1.05rem; cursor: pointer;
+    color: var(--bg); background: var(--pink); border: 0;
+    padding: 12px 26px; border-radius: 99px;
+    box-shadow: 0 0 18px rgba(255,138,216,.6); transition: transform .2s;
+  }
+  #copy:hover { transform: scale(1.06); }
+  @media (max-width: 560px) { .card { width: 200px; } .art { font-size: 4rem; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <span class="spark" style="top:4%;left:8%;font-size:1.6rem">✦</span>
+  <span class="spark" style="top:12%;right:10%;font-size:1.2rem">✧</span>
+  <span class="spark" style="top:55%;left:4%;font-size:1rem">★</span>
+  <span class="spark" style="bottom:8%;right:7%;font-size:1.7rem">✦</span>
+  <span class="spark" style="bottom:20%;left:12%;font-size:1.1rem">✧</span>
+
+  <h1>who's that girl ✦</h1>
+  <p class="sub">pick ur fave, one at a time ✧</p>
+
+  <div id="game">
+    <div id="progress"></div>
+    <div class="bar"><div id="fill"></div></div>
+    <div id="arena"></div>
+  </div>
+
+  <div id="results">
+    <h2>ur ranking ★</h2>
+    <ol id="list"></ol>
+    <button id="copy">copy my ranking ✦</button>
+  </div>
+
+<script>
+  // 1. The fixed song list. Each song has a title and an artist key for its colours.
+  const ARTISTS = {
+    pp:   { name: "Pink Pantheress", grad: "var(--pp)",   dot: "#c24dff" },
+    tyla: { name: "Tyla",            grad: "var(--tyla)", dot: "#ffb02e" },
+    kat:  { name: "Katseye",         grad: "var(--kat)",  dot: "#5fc8ff" }
+  };
+  const RAW = {
+    pp: ["Just For Me","Break It Off","Boy's a Liar","Capable","Noticed","Passion","Heaven Knows","Ily","Dark (feat. SL)","Last Valentines"],
+    tyla: ["Water","Jump","Truth or Dare","On My Body","ART","Butterflies","No. 1","Back It Up"],
+    kat: ["Touch","Debut","SOS","My Way","Gnarly","Favorite","Cool With It"]
+  };
+  const songs = [];
+  for (const key in RAW) RAW[key].forEach(t => songs.push({ title: t, artist: key }));
+
+  // 2. Shuffle so the matchups are different each time you play.
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // 3. Work out the most matches that could ever be needed (used for the progress text).
+  function worstCase(n) {
+    if (n <= 1) return 0;
+    const half = Math.floor(n / 2);
+    return worstCase(half) + worstCase(n - half) + n - 1;
+  }
+  const MAX = worstCase(songs.length);
+  let matchNo = 0;
+
+  const arena = document.getElementById("arena");
+  const progress = document.getElementById("progress");
+  const fill = document.getElementById("fill");
+
+  // 4. Build one song card. Clicking it calls onPick.
+  function makeCard(song, onPick) {
+    const a = ARTISTS[song.artist];
+    const btn = document.createElement("button");
+    btn.className = "card";
+    btn.innerHTML = '<div class="art" style="background:' + a.grad + '">♪</div>' +
+      '<div class="title"></div><div class="artist"></div>';
+    btn.querySelector(".title").textContent = song.title;
+    btn.querySelector(".artist").textContent = a.name;
+    btn.addEventListener("click", onPick);
+    return btn;
+  }
+
+  // 5. Show two cards and wait for a click. Returns true if the first card won.
+  function ask(x, y) {
+    matchNo++;
+    progress.textContent = "match " + matchNo + " of up to " + MAX + " ✦";
+    fill.style.width = Math.min(100, (matchNo - 1) / MAX * 100) + "%";
+    return new Promise(resolve => {
+      arena.innerHTML = "";
+      const vs = document.createElement("span");
+      vs.className = "vs"; vs.textContent = "✧";
+      arena.append(makeCard(x, () => resolve(true)), vs, makeCard(y, () => resolve(false)));
+    });
+  }
+
+  // 6. Merge sort: rank each half of the list, then merge the halves
+  //    by asking the user which of the two front-runners they prefer.
+  async function mergeSort(list) {
+    if (list.length <= 1) return list;
+    const mid = Math.floor(list.length / 2);
+    const left = await mergeSort(list.slice(0, mid));
+    const right = await mergeSort(list.slice(mid));
+    const out = [];
+    let i = 0, j = 0;
+    while (i < left.length && j < right.length) {
+      // Randomise which side each song appears on so there's no left-side bias.
+      const flip = Math.random() < 0.5;
+      const firstWon = flip ? !(await ask(right[j], left[i])) : await ask(left[i], right[j]);
+      out.push(firstWon ? left[i++] : right[j++]);
+    }
+    return out.concat(left.slice(i), right.slice(j));
+  }
+
+  // 7. Show the final ranked list.
+  function showResults(ranked) {
+    document.getElementById("game").style.display = "none";
+    const list = document.getElementById("list");
+    ranked.forEach((s, idx) => {
+      const a = ARTISTS[s.artist];
+      const li = document.createElement("li");
+      li.innerHTML = '<span class="num">' + (idx + 1) + '.</span><span class="dot"></span><span class="t"></span><span class="who"></span>';
+      li.querySelector(".dot").style.background = a.dot;
+      li.querySelector(".t").textContent = s.title;
+      li.querySelector(".who").textContent = a.name;
+      list.appendChild(li);
+    });
+    document.getElementById("results").style.display = "block";
+
+    // 8. Copy button: builds "1. Song - Artist" lines and puts them on the clipboard.
+    const btn = document.getElementById("copy");
+    btn.addEventListener("click", async () => {
+      const text = ranked.map((s, i) => (i + 1) + ". " + s.title + " - " + ARTISTS[s.artist].name).join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta);
+        ta.select(); document.execCommand("copy"); ta.remove();
+      }
+      btn.textContent = "copied! ✧";
+      setTimeout(() => btn.textContent = "copy my ranking ✦", 1500);
+    });
+  }
+
+  // 9. Start everything.
+  mergeSort(shuffle(songs.slice())).then(showResults);
+</script>
+</body>
+</html>
+
+
